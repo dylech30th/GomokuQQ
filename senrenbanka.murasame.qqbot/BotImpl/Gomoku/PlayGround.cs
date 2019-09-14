@@ -15,6 +15,8 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
         public string BlackPlayer;
         public string WhitePlayer;
 
+        public int Steps = 0;
+
         public Role Role { get; set; }
 
         public PlayGround(string gameId)
@@ -22,7 +24,7 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
             GameId = gameId;
             RandomizeFirst();
 
-            Directory.CreateDirectory($"E:\\CQPro\\data\\image\\{GameId}");
+            Directory.CreateDirectory($"data\\image\\{GameId}");
 
             for (var i = 0; i < 15; i++)
             {
@@ -78,13 +80,21 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
             }
         }
 
+        public void Regret(Point point)
+        {
+            _chessBoard[point.X, point.Y] = new ChessmanPoint(point.X, point.Y, Chessman.Empty);
+            Role = Role == Role.Black ? Role.White : Role.Black;
+        }
+
         public Chessman IsWin(int x, int y)
         {
             switch (Check(_chessBoard.GetPoint(x, y)))
             {
                 case Winner.Black:
+                    Timer.Stop();
                     return Chessman.Black;
                 case Winner.White:
+                    Timer.Stop();
                     return Chessman.White;
                 case Winner.None:
                     return Chessman.Empty;
@@ -116,8 +126,11 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
         private void WhiteGo(int x, int y)
         {
             Role = Role.Black;
+            
             _chessBoard[x, y] = new ChessmanPoint(x, y, Chessman.White);
             DrawChessBoard(new Point(x, y));
+
+            Steps++;
         }
 
         private void BlackGo(int x, int y)
@@ -125,6 +138,8 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
             Role = Role.White;
             _chessBoard[x, y] = new ChessmanPoint(x, y, Chessman.Black);
             DrawChessBoard(new Point(x, y));
+
+            Steps++;
         }
     }
 

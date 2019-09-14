@@ -1,4 +1,6 @@
-﻿namespace senrenbanka.murasame.qqbot.Persistence
+﻿using System;
+
+namespace senrenbanka.murasame.qqbot.Persistence
 {
     public class Configuration
     {

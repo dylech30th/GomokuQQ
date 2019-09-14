@@ -1,14 +1,13 @@
-﻿using Newbe.Mahua.MahuaEvents;
-using System;
-using System.Linq;
+﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newbe.Mahua;
+using Newbe.Mahua.MahuaEvents;
 using senrenbanka.murasame.qqbot.BotImpl.Gomoku;
 using senrenbanka.murasame.qqbot.Persistence;
 using senrenbanka.murasame.qqbot.Resources.CoolQ;
 
-namespace senrenbanka.murasame.qqbot.MahuaApis
+namespace senrenbanka.murasame.qqbot.MahuaEvents
 {
     /// <summary>
     /// 群消息接收事件
@@ -22,6 +21,11 @@ namespace senrenbanka.murasame.qqbot.MahuaApis
             _mahuaApi = mahuaApi;
         }
 
+        private const string CommandJoinGame = "/gj";
+        private const string CommandVoteEnd = "ve";
+        private const string CommandExit = "/ge";
+        private const string CommandSurrender = "/gf";
+
         public void ProcessGroupMessage(GroupMessageReceivedContext context)
         {
             var game = GomokuFactory.GetOrCreatePlayGround(context.FromGroup);
@@ -29,33 +33,33 @@ namespace senrenbanka.murasame.qqbot.MahuaApis
             if (game != null && game.GameFull && game.GameStarted && game.IsMessageFromPlayer(context.FromQq))
             {
                 var regex = Regex.Match(context.Message, "^\\d{1,2}[a-oA-O]*");
-                if (regex.Success && regex.Value.Length == 2 || regex.Value.Length == 3) 
+                var reverse = Regex.Match(context.Message, "^[a-oA-O](\\d{1,2})*");
+
+                if (regex.Success || reverse.Success && regex.Value.Length == 2 || regex.Value.Length == 3 || reverse.Value.Length == 2 || reverse.Value.Length == 3) 
                 {
                     ProcessPlayerGoCommand(game, context);
                 }
-                if (context.Message == "/gf")
-                {
-                    ProcessPlayerSurrender(game, context);
-                }
+                else
+                    switch (context.Message)
+                    {
+                        case CommandSurrender:
+                            ProcessPlayerSurrender(game, context);
+                            break;
+                        case CommandVoteEnd:
+                            ProcessVoteEnd(game, context);
+                            break;
+                    }
             }
 
-            if (game != null && game.IsMessageFromPlayer(context.FromQq))
+            if (game != null && game.IsMessageFromPlayer(context.FromQq) && context.Message == CommandExit)
             {
-                switch (context.Message)
-                {
-                    case "/ge":
-                        ProcessPlayerExit(game, context);
-                        break;
-                    case "/gs":
-                        ProcessEndGame(game, context);
-                        break;
-                }
+                ProcessPlayerExit(game, context);
             }
         }
 
         private void ProcessJoinGameRequest(GroupMessageReceivedContext context, PlayGround game)
         {
-            if (context.Message.Equals("/gj"))
+            if (context.Message == CommandJoinGame)
             {
                 var result = game.PlayerJoinGame(context.FromQq);
 
@@ -92,8 +96,8 @@ namespace senrenbanka.murasame.qqbot.MahuaApis
             message.AppendLine("命令列表: (您随时都可以使用/help查看命令)");
             message.AppendLine("   落子: x坐标y坐标(先后顺序不固定,0a和a0效果等同)");
             message.AppendLine("   退出: /ge");
-            message.AppendLine("   结束游戏: /gs");
             message.AppendLine("   投降: /gf");
+            message.AppendLine("   悔棋: /gr");
             message.AppendLine("   查看Gomoku Credit: /gc");
             message.AppendLine("---------------------------------");
 
@@ -156,50 +160,69 @@ namespace senrenbanka.murasame.qqbot.MahuaApis
 
         private void SendWinMessage(PlayGround game, GroupMessageReceivedContext context, bool isBlackWin)
         {
+            var elapsed = TimeSpan.FromMilliseconds(game.Timer.ElapsedMilliseconds);
+
             var winner = isBlackWin ? game.BlackPlayer : game.WhitePlayer;
             var loser = isBlackWin ? game.WhitePlayer : game.BlackPlayer;
 
-            SetCredit(winner, loser);
+            GomokuCredit.SetOrIncreaseCredit(winner, 10000);
+            GomokuCredit.SetOrIncreaseCredit(loser, -10000);
+            GomokuCredit.SaveCreditFile();
 
             _mahuaApi.SendGroupMessage(context.FromGroup, $"{(isBlackWin ? "黑" : "白")}方{CqCode.At(winner)}胜利！游戏结束！");
             _mahuaApi.SendGroupMessage(context.FromGroup)
                .Text($"胜者{CqCode.At(winner)}获得10000 Gomoku Credit, 现在有{GomokuCredit.GetCredit(winner)} Gomoku Credit")
                .Newline()
                .Text($"败者{CqCode.At(loser)}扣去10000 Gomoku Credit, 现在有{GomokuCredit.GetCredit(loser)} Gomoku Credit")
+               .Newline()
+               .Text($"本局共用时{elapsed.Minutes}分{elapsed.Seconds}秒")
                .Done();
 
             game.Dispose();
         }
 
-        private static void SetCredit(string winner, string loser)
-        {
-            GomokuFactory.SetOrIncreasePlayerCredit(winner, 10000);
-            GomokuFactory.SetOrIncreasePlayerCredit(loser, -10000);
-        }
-
         private void ProcessPlayerExit(PlayGround game, GroupMessageReceivedContext context)
         {
             _mahuaApi.SendGroupMessage(context.FromGroup, $"{CqCode.At(context.FromQq)}离开游戏，游戏结束！");
+            if (game.GameStarted)
+            {
+                _mahuaApi.SendGroupMessage(context.FromGroup, $"根据退赛惩罚机制,{CqCode.At(context.FromQq)}将会被扣除20000点Gomoku Credit");
+                GomokuCredit.SetOrIncreaseCredit(context.FromQq, -30000);
+            }
             game.Dispose();
         }
 
-        private void ProcessEndGame(PlayGround game, GroupMessageReceivedContext context)
+        private void ProcessVoteEnd(PlayGround game, GroupMessageReceivedContext context)
         {
-            _mahuaApi.SendGroupMessage(context.FromGroup, $"{CqCode.At(context.FromQq)}选择了结束游戏，游戏结束！");
-            game.Dispose();
+            if (game.GameStarted)
+            {
+                if (game.VoteForEnd.isVoting && game.IsMessageFromPlayer(context.FromQq) && context.FromQq != game.VoteForEnd.qq)
+                {
+                    _mahuaApi.SendGroupMessage(context.FromGroup, $"投票通过,结束ID为{game.GameId}的游戏");
+                    game.Dispose();
+                }
+                else
+                {
+                    if (!game.VoteForEnd.isVoting && game.IsMessageFromPlayer(context.FromQq))
+                    {
+                        _mahuaApi.SendGroupMessage(context.FromGroup, $"{CqCode.At(context.FromQq)}发起结束游戏投票!同意请输入{CommandVoteEnd}");
+                        game.VoteForEnd = (context.FromQq, true);
+                    }
+                }
+            }
         }
 
         private void ProcessPlayerSurrender(PlayGround game, GroupMessageReceivedContext context)
         {
             var isBlackWin = game.BlackPlayer != context.FromQq;
-            _mahuaApi.SendGroupMessage(context.FromGroup, $"{CqCode.At(context.FromQq)}选择了投降!");
+            _mahuaApi.SendGroupMessage(context.FromGroup, $"{CqCode.At(context.FromQq)}选择了投降！");
             
             SendWinMessage(game, context, isBlackWin);
         }
 
         private void SendImage(GroupMessageReceivedContext context, PlayGround game)
         {
-            _mahuaApi.SendGroupMessage(context.FromGroup, CqCode.Image($"{game.GameId}\\ChessBoard.jpg"));
+            _mahuaApi.SendGroupMessage(context.FromGroup, CqCode.Image($"{game.GameId}\\ChessBoard_{game.Steps}.jpg"));
         }
     }
 }

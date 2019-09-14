@@ -1,11 +1,8 @@
-﻿using Newbe.Mahua.MahuaEvents;
-using System.IO;
-using System.Threading.Tasks;
-using Newbe.Mahua;
+﻿using Newbe.Mahua;
+using Newbe.Mahua.MahuaEvents;
 using senrenbanka.murasame.qqbot.Persistence;
-using senrenbanka.murasame.qqbot.Resources.Primitive;
 
-namespace senrenbanka.murasame.qqbot.MahuaApis
+namespace senrenbanka.murasame.qqbot.MahuaEvents
 {
     /// <summary>
     /// 插件被禁用事件
@@ -22,7 +19,8 @@ namespace senrenbanka.murasame.qqbot.MahuaApis
 
         public void Disable(PluginDisabledContext context)
         {
-            Task.Run(() => File.WriteAllText(GomokuCredit.Filename, GomokuCredit.GomokuPlayersCredits.ToJson()));
+            Admin.SaveAdmins();
+            GomokuCredit.SaveCreditFile();
         }
     }
 }

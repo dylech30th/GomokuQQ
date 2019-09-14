@@ -1,8 +1,7 @@
-﻿using Newbe.Mahua.MahuaEvents;
-using System;
-using Newbe.Mahua;
+﻿using Newbe.Mahua;
+using Newbe.Mahua.MahuaEvents;
 
-namespace senrenbanka.murasame.qqbot.MahuaApis
+namespace senrenbanka.murasame.qqbot.MahuaEvents
 {
     /// <summary>
     /// 入群邀请接收事件

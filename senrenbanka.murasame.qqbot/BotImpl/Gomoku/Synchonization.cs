@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using senrenbanka.murasame.qqbot.Resources.Primitive;
 
 namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
@@ -38,6 +38,10 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
         public volatile bool GameFull;
         public bool GameStarted;
 
+        public (string qq, bool isVoting) VoteForEnd = (null, false);
+
+        public readonly Stopwatch Timer = new Stopwatch();
+
         public PlayerJoinStat PlayerJoinGame(string player)
         {
             if (!GameFull)
@@ -61,6 +65,7 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
 
         public void StartGame()
         {
+            Timer.Start();
             GameStarted = true;
             SaveImage();
         }
@@ -68,7 +73,7 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
         private void SaveImage()
         {
             var converter = new ImageConverter();
-            File.WriteAllBytes($"E:\\CQPro\\data\\image\\{GameId}\\ChessBoard.jpg", converter.ConvertTo(ChessBoardImage, typeof(byte[])) as byte[] ?? throw new InvalidOperationException());
+            File.WriteAllBytes($"data\\image\\{GameId}\\ChessBoard_{Steps}.jpg", converter.ConvertTo(ChessBoardImage, typeof(byte[])) as byte[] ?? throw new InvalidOperationException());
         }
 
         public DropResult ProcessGoCommand(string cmdInput)
@@ -130,17 +135,12 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
 
         public void Dispose()
         {
-            Task.Run(() =>
-            {
-                GomokuFactory.RemoveGame(GameId);
-                BlackPlayer = null;
-                BlackPlayer = null;
-                GameFull    = false;
-                GameStarted = false;
-                ChessBoardImage?.Dispose();
-                File.Delete($"E:\\CQPro\\data\\image\\{GameId}\\ChessBoard.png");
-                Directory.Delete($"E:\\CQPro\\data\\image\\{GameId}");
-            });
+            GomokuFactory.RemoveGame(GameId);
+            BlackPlayer = null;
+            BlackPlayer = null;
+            GameFull    = false;
+            GameStarted = false;
+            ChessBoardImage?.Dispose();
         }
     }
 }

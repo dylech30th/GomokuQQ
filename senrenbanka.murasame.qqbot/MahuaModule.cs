@@ -2,7 +2,7 @@
 using Newbe.Mahua;
 using Newbe.Mahua.MahuaEvents;
 using senrenbanka.murasame.qqbot.BotImpl.TestBot;
-using senrenbanka.murasame.qqbot.MahuaApis;
+using senrenbanka.murasame.qqbot.MahuaEvents;
 
 namespace senrenbanka.murasame.qqbot
 {
@@ -56,6 +56,9 @@ namespace senrenbanka.murasame.qqbot
                    .As<IGroupMessageReceivedMahuaEvent>();
 
                 builder.RegisterType<CallHelpGroupMessageReceivedMahuaEvent>()
+                   .As<IGroupMessageReceivedMahuaEvent>();
+
+                builder.RegisterType<CommandsGroupMessageReceivedMahuaEvent>()
                    .As<IGroupMessageReceivedMahuaEvent>();
 
                 builder.RegisterType<AskGomokuCreditsGroupMessageReceivedMahuaEvent>()

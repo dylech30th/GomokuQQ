@@ -1,27 +1,23 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Threading.Tasks;
 
 namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku.Drawing
 {
     public class Painter
     {
-        public static async Task<Image> DrawChessBoard()
+        public static Image DrawChessBoard()
         {
             var img = new Bitmap(Configuration.ChessBoardImageWidth, Configuration.ChessBoardImageHeight);
 
-            await Task.Run(() =>
+            using (var graphics = Graphics.FromImage(img))
             {
-                using (var graphics = Graphics.FromImage(img))
-                {
-                    FillWhite(graphics);
-                    DrawBorder(graphics);
-                    DrawCrossLine(graphics);
-                    DrawIdentifier(graphics);
-                    DrawStars(graphics);
-                }
-            });
+                FillWhite(graphics);
+                DrawBorder(graphics);
+                DrawCrossLine(graphics);
+                DrawIdentifier(graphics);
+                DrawStars(graphics);
+            }
 
             return img;
         }
