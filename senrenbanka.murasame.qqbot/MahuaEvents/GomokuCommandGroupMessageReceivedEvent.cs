@@ -22,7 +22,7 @@ namespace senrenbanka.murasame.qqbot.MahuaEvents
         }
 
         private const string CommandJoinGame = "/gj";
-        private const string CommandVoteEnd = "ve";
+        private const string CommandVoteEnd = "/ve";
         private const string CommandExit = "/ge";
         private const string CommandSurrender = "/gf";
 
@@ -97,7 +97,7 @@ namespace senrenbanka.murasame.qqbot.MahuaEvents
             message.AppendLine("   落子: x坐标y坐标(先后顺序不固定,0a和a0效果等同)");
             message.AppendLine("   退出: /ge");
             message.AppendLine("   投降: /gf");
-            message.AppendLine("   悔棋: /gr");
+            message.AppendLine("   投票结束: /ve");
             message.AppendLine("   查看Gomoku Credit: /gc");
             message.AppendLine("---------------------------------");
 
@@ -201,13 +201,10 @@ namespace senrenbanka.murasame.qqbot.MahuaEvents
                     _mahuaApi.SendGroupMessage(context.FromGroup, $"投票通过,结束ID为{game.GameId}的游戏");
                     game.Dispose();
                 }
-                else
+                else if (!game.VoteForEnd.isVoting && game.IsMessageFromPlayer(context.FromQq))
                 {
-                    if (!game.VoteForEnd.isVoting && game.IsMessageFromPlayer(context.FromQq))
-                    {
-                        _mahuaApi.SendGroupMessage(context.FromGroup, $"{CqCode.At(context.FromQq)}发起结束游戏投票!同意请输入{CommandVoteEnd}");
-                        game.VoteForEnd = (context.FromQq, true);
-                    }
+                    _mahuaApi.SendGroupMessage(context.FromGroup, $"{CqCode.At(context.FromQq)}发起结束游戏投票!同意请输入{CommandVoteEnd}");
+                    game.VoteForEnd = (context.FromQq, true);
                 }
             }
         }
