@@ -1,7 +1,9 @@
-﻿namespace senrenbanka.murasame.qqbot.CommandHandler
+﻿using System.Collections.Generic;
+
+namespace senrenbanka.murasame.qqbot.CommandHandler
 {
-    public interface ICommandTransform : ICommandBase
+    public interface ICommandTransform
     {
-        void Transform(string cmdInput);
+        IEnumerable<string> Transform(string cmdInput);
     }
 }

@@ -4,16 +4,13 @@ using senrenbanka.murasame.qqbot.CommandHandler.Attributes;
 
 namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
 {
+    [Name("/gcget")]
     [AdminOnly]
     public class GetGomokuCreditCommand : ICommandTransform
     {
-        public string Name { get; set; } = "/gcget";
-
-        public IEnumerable<string> Parameters { get; set; }
-
-        public void Transform(string cmdInput)
+        public IEnumerable<string> Transform(string cmdInput)
         {
-            Parameters = cmdInput.Substring(cmdInput.IndexOf(" ", StringComparison.Ordinal) + 1).Split( ' ');
+            return cmdInput.Substring(cmdInput.IndexOf(" ", StringComparison.Ordinal) + 1).Split( ' ');
         }
     }
 }

@@ -10,16 +10,19 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     [HandlerOf(nameof(UnOpUserCommand))]
     public class UnOpUserCommandHandler : ICommandHandler<UnOpUserCommand>
     {
-        public void Handle(UnOpUserCommand command, IMahuaApi replier, string toReply)
+        public void Handle(string cmdInput, UnOpUserCommand command, params object[] handleObjects)
         {
-            if (long.TryParse(command.Parameters.ToList()[0], out var id))
+            var replier = handleObjects[0] as IMahuaApi;
+            var toReply = handleObjects[1] as string;
+
+            if (long.TryParse(command.Transform(cmdInput).ToList()[0], out var id))
             {
                 Admin.Administrators.RemoveWhere(p => p.Id == id.ToString());
                 Admin.SaveAdmins();
-                replier.SendGroupMessage(toReply, "移除成功");
+                replier?.SendGroupMessage(toReply, "移除成功");
                 return;
             }
-            replier.SendGroupMessage(toReply, "参数错误");
+            replier?.SendGroupMessage(toReply, "参数错误");
         }
     }
 }

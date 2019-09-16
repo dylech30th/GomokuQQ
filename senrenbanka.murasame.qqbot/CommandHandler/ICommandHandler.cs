@@ -1,9 +1,7 @@
-﻿using Newbe.Mahua;
-
-namespace senrenbanka.murasame.qqbot.CommandHandler
+﻿namespace senrenbanka.murasame.qqbot.CommandHandler
 {
     public interface ICommandHandler<in T> where T : ICommandTransform
     {
-        void Handle(T command, IMahuaApi replier, string toReply);
+        void Handle(string cmdInput, T command, params object[] handleObjects);
     }
 }

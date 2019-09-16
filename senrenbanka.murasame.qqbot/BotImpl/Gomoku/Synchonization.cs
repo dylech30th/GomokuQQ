@@ -2,7 +2,10 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
+using senrenbanka.murasame.qqbot.Persistence;
+using senrenbanka.murasame.qqbot.Resources.CoolQ;
 using senrenbanka.murasame.qqbot.Resources.Primitive;
 
 namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
@@ -106,6 +109,11 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
             return BlackPlayer == qq || WhitePlayer == qq;
         }
 
+        public bool IsActivatedAndValid(string qq)
+        {
+            return GameFull && GameStarted && IsMessageFromPlayer(qq);
+        }
+
         private static GameState ParseCommand(string command, out Point point)
         {
             var match = Regex.Match(command, "(?<XCoordinate>\\d{1,2})(?<YCoordinate>[a-oA-O])");
@@ -141,6 +149,28 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
             GameFull    = false;
             GameStarted = false;
             ChessBoardImage?.Dispose();
+        }
+
+        public string GetWinMessage(bool isBlackWin)
+        {
+            var elapsed = TimeSpan.FromMilliseconds(Timer.ElapsedMilliseconds);
+
+            var winner = isBlackWin ? BlackPlayer : WhitePlayer;
+            var loser = isBlackWin ? WhitePlayer : BlackPlayer;
+
+            GomokuCredit.SetOrIncreaseCredit(winner, 10000);
+            GomokuCredit.SetOrIncreaseCredit(loser, -10000);
+            GomokuCredit.SaveCreditFile();
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"{(isBlackWin ? "黑" : "白")}方{CqCode.At(winner)}胜利！游戏结束！");
+            sb.AppendLine($"胜者{CqCode.At(winner)}获得10000 Gomoku Credit, 现在有{GomokuCredit.GetCredit(winner)} Gomoku Credit");
+            sb.AppendLine($"败者{CqCode.At(loser)}扣去10000 Gomoku Credit, 现在有{GomokuCredit.GetCredit(loser)} Gomoku Credit");
+            sb.Append($"本局共用时{elapsed.Minutes}分{elapsed.Seconds}秒");
+
+            Dispose();
+
+            return sb.ToString();
         }
     }
 }

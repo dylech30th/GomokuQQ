@@ -36,5 +36,15 @@ namespace senrenbanka.murasame.qqbot.Resources.Runtime
         {
             instance.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public).FirstOrDefault(p => p.Name == method)?.Invoke(instance, parameters);
         }
+
+        public static IEnumerable<Type> GetTypes(this Assembly assembly)
+        {
+            return assembly.GetTypes();
+        }
+
+        public static IEnumerable<Type> GetClasses(this Assembly assembly)
+        {
+            return assembly.GetTypes().Where(type => type.IsClass);
+        }
     }
 }
