@@ -11,19 +11,19 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     {
         public void Handle(string cmdInput, ForceEndGomokuCommand command, params object[] handleObjects)
         {
-            var replier = handleObjects[0] as IMahuaApi;
-            var toReply = handleObjects[1] as string;
+            var toReply = handleObjects[0] as string;
+            var mahuaApi = CommandFactory.GetMahuaApi();
 
             if (long.TryParse(command.Transform(cmdInput).ToList()[0], out var group))
             {
                 var game = GomokuFactory.GetOrCreatePlayGround(group.ToString());
                 if (game != null)
                 {
-                    replier?.SendGroupMessage(toReply, $"成功结束游戏: {game.GameId}");
+                    mahuaApi.SendGroupMessage(toReply, $"成功结束游戏: {game.GameId}");
                     game.Dispose();
                     return;
                 }
-                replier?.SendGroupMessage(toReply, "参数错误");
+                mahuaApi.SendGroupMessage(toReply, "参数错误");
             }
         }
     }

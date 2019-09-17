@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace senrenbanka.murasame.qqbot.Persistence
+﻿namespace senrenbanka.murasame.qqbot.Persistence
 {
     public class Configuration
     {
-        public const string Me = "2653221698";
+        public static string Me = "2653221698";
     }
 }

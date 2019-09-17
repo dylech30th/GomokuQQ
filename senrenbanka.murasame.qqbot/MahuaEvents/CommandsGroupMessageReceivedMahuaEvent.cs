@@ -1,5 +1,6 @@
 ﻿using Newbe.Mahua;
 using Newbe.Mahua.MahuaEvents;
+using senrenbanka.murasame.qqbot.CommandHandler;
 using senrenbanka.murasame.qqbot.CommandHandler.Commands;
 
 namespace senrenbanka.murasame.qqbot.MahuaEvents
@@ -20,7 +21,7 @@ namespace senrenbanka.murasame.qqbot.MahuaEvents
 
         public void ProcessGroupMessage(GroupMessageReceivedContext context)
         {
-            CommandFactory.Process(context.Message, _mahuaApi, context.FromGroup);
+            CommandFactory.Process(new CommandContext(context.FromQq, context.FromGroup, context.Message), context.FromGroup);
         }
     }
 }

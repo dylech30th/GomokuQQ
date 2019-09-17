@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Newbe.Mahua;
 using senrenbanka.murasame.qqbot.CommandHandler.Attributes;
+using senrenbanka.murasame.qqbot.Persistence;
 using senrenbanka.murasame.qqbot.Resources.Runtime;
 
 namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
@@ -38,30 +40,45 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
             return null;
         }
 
-        public static bool Process(string command, params object[] handleObjects)
+        public static bool Process(CommandContext context, params object[] handleObjects)
         {
-            // 获取命令名
-            var index = command.IndexOf(" ", StringComparison.Ordinal);
-            var commandName = index == -1 ? command : command.Substring(0, index);
+            var index = context.Message.IndexOf(" ", StringComparison.Ordinal);
+            var commandName = index == -1 ? context.Message : context.Message.Substring(0, index);
 
-            // 反射获取对应的命令实体类
             var type = Get(commandName);
 
-            if (type != null && typeof(ICommandTransform).IsAssignableFrom(type))
+            if (type != null && IsCallerHasPrivilege(context, type) && typeof(ICommandTransform).IsAssignableFrom(type))
             {
-                var handlerType = Assembly.GetExecutingAssembly().GetClasses().FirstOrDefault(t => t.GetCustomAttribute<HandlerOf>()?.CommandType == type.Name);
-                // 检查handlerType是否是ICommandHandler<>的子类
-                if (handlerType.IsInheritFromGeneric(typeof(ICommandHandler<>), typeof(ICommandTransform)))
-                {   
-                    // 获取Handler实例
+                var handlerType = Assembly.GetExecutingAssembly().GetClasses().FirstOrDefault(t => t.GetCustomAttribute<HandlerOf>()?.CommandType == type.Name && !t.HasCustomAttribute<Deprecated>() && !IsExcluded(t, context.FromGroup));
+                if (handlerType != null && handlerType.IsInheritFromGeneric(typeof(ICommandHandler<>), typeof(ICommandTransform)))
+                {
                     var handler = handlerType.GetNonParameterConstructor().Invoke(null);
-                    // 反射调用Handler的Handle方法, 实现命令处理
-                    handler.CallMethod("Handle", command, type.GetNonParameterConstructor().Invoke(null), handleObjects);
+                    handler.CallMethod("Handle", context.Message, type.GetNonParameterConstructor().Invoke(null), handleObjects);
                     return true;
                 }
             }
             return false;
-            // 我之所以写这么多注释是因为这方法我总是忘了我写的啥
+        }
+
+        private static bool IsCallerHasPrivilege(CommandContext context, Type commandType)
+        {
+            if (commandType.HasCustomAttribute<OwnerOnly>() && context.From != Configuration.Me)
+            {
+                return false;
+            }
+
+            return !commandType.HasCustomAttribute<AdminOnly>() || context.From == Configuration.Me || Admin.GetAdministrators().All(admin => admin.Id != context.From);
+        }
+
+        private static bool IsExcluded(MemberInfo type, string group)
+        {
+            var attr = type.GetCustomAttribute<Exclude>();
+            return attr != null && attr.Excludes.Contains(group);
+        }
+
+        public static IMahuaApi GetMahuaApi()
+        {
+            return MahuaRobotManager.Instance.CreateSession().MahuaApi;
         }
     }
 }

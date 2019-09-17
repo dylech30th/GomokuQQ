@@ -16,7 +16,7 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
         {
             var game = (PlayGround) handleObjects[0];
             var context = (GroupMessageReceivedContext) handleObjects[1];
-            var mahuaApi = (IMahuaApi) handleObjects[2];
+            var mahuaApi = CommandFactory.GetMahuaApi();
 
             var result = game.PlayerJoinGame(context.FromQq);
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using senrenbanka.murasame.qqbot.Resources.Primitive;
 
 namespace senrenbanka.murasame.qqbot.Persistence
@@ -11,13 +12,23 @@ namespace senrenbanka.murasame.qqbot.Persistence
 
     public class Admin
     {
-        public static ISet<Administrator> Administrators = new HashSet<Administrator>
+        private static ISet<Administrator> Administrators = new HashSet<Administrator>
         {
             new Administrator
             {
-                Id = "2653221698"
+                Id = Configuration.Me
             } //dc
         };
+
+        public static void AddAdmin(string id)
+        {
+            if (Administrators.All(admin => admin.Id != id))
+            {
+                Administrators.Add(new Administrator {Id = id});
+            }
+        }
+
+        public static ISet<Administrator> GetAdministrators() => Administrators;
 
         private const string Filename = "admins.json";
 

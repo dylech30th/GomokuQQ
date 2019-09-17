@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Newbe.Mahua;
+﻿using System.Linq;
 using senrenbanka.murasame.qqbot.CommandHandler.Attributes;
 using senrenbanka.murasame.qqbot.CommandHandler.Commands;
 using senrenbanka.murasame.qqbot.Persistence;
@@ -12,17 +10,17 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     {
         public void Handle(string cmdInput, SetGomokuCreditCommand command, params object[] handleObjects)
         {
-            var replier = handleObjects[0] as IMahuaApi;
-            var toReply = handleObjects[1] as string;
+            var toReply = handleObjects[0] as string;
+            var mahuaApi = CommandFactory.GetMahuaApi();
 
             var p = command.Transform(cmdInput).ToList();
             if (long.TryParse(p[0], out var id) && long.TryParse(p[1], out var credit))
             {
                 GomokuCredit.SetOrRewriteCredit(id.ToString(), credit);
-                replier?.SendGroupMessage(toReply, "设置GomokuCredit成功");
+                mahuaApi.SendGroupMessage(toReply, "设置GomokuCredit成功");
                 return;
             }
-            replier?.SendGroupMessage(toReply, "参数错误");
+            mahuaApi.SendGroupMessage(toReply, "参数错误");
         }
     }
 }

@@ -16,19 +16,18 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
         {
             var game = (PlayGround) handleObjects[0];
             var context = (GroupMessageReceivedContext) handleObjects[1];
-            var mahuaApi = (IMahuaApi) handleObjects[2];
 
             if (game != null && game.IsMessageFromPlayer(context.FromQq))
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($"{CqCode.At(context.FromQq)}离开游戏，游戏结束！");
+                sb.Append($"{CqCode.At(context.FromQq)}离开游戏，游戏结束！");
             
                 if (game.GameStarted)
                 {
-                    sb.Append($"根据退赛惩罚机制,{CqCode.At(context.FromQq)}将会被扣除20000点Gomoku Credit");
+                    sb.Append($"\n根据退赛惩罚机制,{CqCode.At(context.FromQq)}将会被扣除20000点Gomoku Credit");
                     GomokuCredit.SetOrIncreaseCredit(context.FromQq, -30000);
                 }
-                mahuaApi.SendGroupMessage(context.FromGroup, sb.ToString());
+                CommandFactory.GetMahuaApi().SendGroupMessage(context.FromGroup, sb.ToString());
 
                 game.Dispose();
             }

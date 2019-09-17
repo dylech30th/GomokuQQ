@@ -15,10 +15,9 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
             var qq = command.Transform(cmdInput).ToList()[0];
             var credit = GomokuCredit.GetCredit(qq);
 
-            var replier = handleObjects[0] as IMahuaApi;
-            var toReply = handleObjects[1] as string;
+            var toReply = handleObjects[0] as string;
 
-            replier?.SendGroupMessage(toReply, credit.HasValue ? $"{qq}的GomokuCredit为{credit.Value}" : $"{qq}尚没有游戏记录");
+            CommandFactory.GetMahuaApi().SendGroupMessage(toReply, credit.HasValue ? $"{qq}的GomokuCredit为{credit.Value}" : $"{qq}尚没有游戏记录");
         }
     }
 }
