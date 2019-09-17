@@ -12,13 +12,12 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     [HandlerOf(nameof(GomokuPlayerJoinGameCommand))]
     public class GomokuPlayerJoinGameCommandHandler : ICommandHandler<GomokuPlayerJoinGameCommand>
     {
-        public void Handle(string cmdInput, GomokuPlayerJoinGameCommand command, params object[] handleObjects)
+        public void Handle(CommandContext context, GomokuPlayerJoinGameCommand command, params object[] handleObjects)
         {
             var game = (PlayGround) handleObjects[0];
-            var context = (GroupMessageReceivedContext) handleObjects[1];
             var mahuaApi = CommandFactory.GetMahuaApi();
 
-            var result = game.PlayerJoinGame(context.FromQq);
+            var result = game.PlayerJoinGame(context.From);
 
             switch (result)
             {
@@ -31,13 +30,13 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
                 case PlayerJoinStat.Success:
                     if (game.GameFull)
                     {
-                        mahuaApi.SendGroupMessage(context.FromGroup, $"白方:{CqCode.At(context.FromQq)}成功加入！");
+                        mahuaApi.SendGroupMessage(context.FromGroup, $"白方:{CqCode.At(context.From)}成功加入！");
                         game.StartGame();
-                        PrintStartMessage(context, game, mahuaApi);
+                        PrintStartMessage(context.FromGroup, game, mahuaApi);
                     }
                     else
                     {
-                        mahuaApi.SendGroupMessage(context.FromGroup, $"黑方:{CqCode.At(context.FromQq)}成功加入！");
+                        mahuaApi.SendGroupMessage(context.FromGroup, $"黑方:{CqCode.At(context.From)}成功加入！");
                     }
                     return;
                 default:
@@ -45,7 +44,7 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
             }
         }
 
-        private static void PrintStartMessage(GroupMessageReceivedContext context, PlayGround game, IMahuaApi mahuaApi)
+        private static void PrintStartMessage(string group, PlayGround game, IMahuaApi mahuaApi)
         {
             var message = new StringBuilder("开始游戏！\n");
             message.AppendLine("---------------------------------");
@@ -69,7 +68,7 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
                     throw new ArgumentOutOfRangeException();
             }
 
-            mahuaApi.SendGroupMessage(context.FromGroup)
+            mahuaApi.SendGroupMessage(group)
                .Text(message.ToString())
                .Newline()
                .Text(CqCode.Image($"{game.GameId}\\ChessBoard_{game.Steps}.jpg"))

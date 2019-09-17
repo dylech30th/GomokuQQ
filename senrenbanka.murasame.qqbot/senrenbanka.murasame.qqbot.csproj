@@ -92,12 +92,14 @@
     <Compile Include="CommandHandler\Attributes\Deprecated.cs" />
     <Compile Include="CommandHandler\Attributes\HandlerOf.cs" />
     <Compile Include="CommandHandler\Attributes\Name.cs" />
+    <Compile Include="CommandHandler\Attributes\Namespace.cs" />
     <Compile Include="CommandHandler\Attributes\OwnerOnly.cs" />
     <Compile Include="CommandHandler\CommandContext.cs" />
     <Compile Include="CommandHandler\Commands\CommandFactory.cs" />
     <Compile Include="CommandHandler\Commands\ForceEndGomokuCommand.cs" />
     <Compile Include="CommandHandler\Commands\GetGomokuCreditCommand.cs" />
     <Compile Include="CommandHandler\Commands\GetOpListCommand.cs" />
+    <Compile Include="CommandHandler\Commands\GetOwnerCommand.cs" />
     <Compile Include="CommandHandler\Commands\GomokuPlayerExitCommand.cs" />
     <Compile Include="CommandHandler\Commands\GomokuPlayerGoCommand.cs" />
     <Compile Include="CommandHandler\Commands\GomokuPlayerJoinGameCommand.cs" />
@@ -110,6 +112,7 @@
     <Compile Include="CommandHandler\Handlers\ForceEndGomokuCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GetGomokuCreditCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GetOpListCommandHandler.cs" />
+    <Compile Include="CommandHandler\Handlers\GetOwnerCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GomokuPlayerJoinGameCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GomokuPlayerExitCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GomokuPlayerGoCommandHandler.cs" />

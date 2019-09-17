@@ -9,19 +9,18 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     [HandlerOf(nameof(UnOpUserCommand))]
     public class UnOpUserCommandHandler : ICommandHandler<UnOpUserCommand>
     {
-        public void Handle(string cmdInput, UnOpUserCommand command, params object[] handleObjects)
+        public void Handle(CommandContext context, UnOpUserCommand command, params object[] handleObjects)
         {
-            var toReply = handleObjects[0] as string;
             var mahuaApi = CommandFactory.GetMahuaApi();
 
-            if (long.TryParse(command.Transform(cmdInput).ToList()[0], out var id))
+            if (long.TryParse(command.Transform(context.Message).ToList()[0], out var id))
             {
                 Admin.GetAdministrators().RemoveWhere(p => p.Id == id.ToString());
+                mahuaApi.SendGroupMessage(context.FromGroup, "移除成功");
                 Admin.SaveAdmins();
-                mahuaApi.SendGroupMessage(toReply, "移除成功");
                 return;
             }
-            mahuaApi.SendGroupMessage(toReply, "参数错误");
+            mahuaApi.SendGroupMessage(context.FromGroup, "参数错误");
         }
     }
 }

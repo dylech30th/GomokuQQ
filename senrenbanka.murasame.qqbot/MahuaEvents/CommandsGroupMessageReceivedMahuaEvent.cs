@@ -21,7 +21,7 @@ namespace senrenbanka.murasame.qqbot.MahuaEvents
 
         public void ProcessGroupMessage(GroupMessageReceivedContext context)
         {
-            CommandFactory.Process(new CommandContext(context.FromQq, context.FromGroup, context.Message), context.FromGroup);
+            CommandFactory.Process(new CommandContext(context.FromQq, context.FromGroup, context.Message, CommandFactory.QueryCommandNs));
         }
     }
 }

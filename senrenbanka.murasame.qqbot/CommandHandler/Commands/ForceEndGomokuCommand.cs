@@ -6,6 +6,7 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
 {
     [Name("/gsf")]
     [AdminOnly]
+    [Namespace("ns:Query")]
     public class ForceEndGomokuCommand : ICommandTransform
     {
         public IEnumerable<string> Transform(string cmdInput)

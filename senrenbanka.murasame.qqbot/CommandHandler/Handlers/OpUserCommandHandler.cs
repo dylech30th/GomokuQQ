@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Newbe.Mahua;
 using senrenbanka.murasame.qqbot.CommandHandler.Attributes;
 using senrenbanka.murasame.qqbot.CommandHandler.Commands;
 using senrenbanka.murasame.qqbot.Persistence;
@@ -9,19 +8,17 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     [HandlerOf(nameof(OpUserCommand))]
     public class OpUserCommandHandler : ICommandHandler<OpUserCommand>
     {
-        public void Handle(string cmdInput, OpUserCommand command, params object[] handleObjects)
+        public void Handle(CommandContext context, OpUserCommand command, params object[] handleObjects)
         {
-            var toReply = handleObjects[0] as string;
             var mahuaApi = CommandFactory.GetMahuaApi();
 
-            if (long.TryParse(command.Transform(cmdInput).ToList()[0], out var id))
+            if (long.TryParse(command.Transform(context.Message).ToList()[0], out var id))
             {
+                mahuaApi.SendGroupMessage(context.FromGroup, "设置OP成功");
                 Admin.AddAdmin(id.ToString());
-                Admin.SaveAdmins();
-                mahuaApi.SendGroupMessage(toReply, "设置OP成功");
                 return;
             }
-            mahuaApi.SendGroupMessage(toReply, "参数错误");
+            mahuaApi.SendGroupMessage(context.FromGroup, "参数错误");
         }
     }
 }

@@ -8,9 +8,12 @@
 
         public string Message { get; set; }
 
-        public CommandContext(string @from, string fromGroup, string message)
+        public string Namespace { get; set; }
+
+        public CommandContext(string from, string fromGroup, string message, string @namespace)
         {
-            From = @from;
+            Namespace = @namespace;
+            From = from;
             FromGroup = fromGroup;
             Message = message;
         }

@@ -17,6 +17,18 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
             return Games[group];
         }
 
+        public static bool TryGetPlayGround(string group, out PlayGround playGround)
+        {
+            if (Games.ContainsKey(group))
+            {
+                playGround = Games[group];
+                return true;
+            }
+
+            playGround = null;
+            return false;
+        }
+
         public static void RemoveGame(string gameId)
         {
             Games.Remove(gameId);

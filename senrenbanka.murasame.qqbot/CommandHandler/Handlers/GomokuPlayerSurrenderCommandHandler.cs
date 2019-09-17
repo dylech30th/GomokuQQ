@@ -10,17 +10,16 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     [HandlerOf(nameof(GomokuPlayerSurrenderCommand))]
     public class GomokuPlayerSurrenderCommandHandler : ICommandHandler<GomokuPlayerSurrenderCommand>
     {
-        public void Handle(string cmdInput, GomokuPlayerSurrenderCommand command, params object[] handleObjects)
+        public void Handle(CommandContext context, GomokuPlayerSurrenderCommand command, params object[] handleObjects)
         {
             var game = (PlayGround) handleObjects[0];
-            var context = (GroupMessageReceivedContext) handleObjects[1];
             var mahuaApi = CommandFactory.GetMahuaApi();
 
-            if (game.IsActivatedAndValid(context.FromQq))
+            if (game.IsActivatedAndValid(context.From))
             {
-                var isBlackWin = game.BlackPlayer != context.FromQq;
+                var isBlackWin = game.BlackPlayer != context.From;
                 mahuaApi.SendGroupMessage(context.FromGroup)
-                   .Text($"{CqCode.At(context.FromQq)}选择了投降！")
+                   .Text($"{CqCode.At(context.From)}选择了投降！")
                    .Newline()
                    .Text(game.GetWinMessage(isBlackWin))
                    .Done();

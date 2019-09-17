@@ -11,41 +11,47 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
 {
     public static class CommandFactory
     {
-        public static Type Get(string name)
+        public static string QueryCommandNs = "ns:Query";
+
+        public static string GomokuCommandsNs = "ns:Gomoku";
+
+        public static Type Get(string name, string @namespace)
         {
             var commandTypes = Assembly.GetExecutingAssembly().GetClasses().GetAllTypesImplementInterface<ICommandTransform>();
 
             foreach (var commandType in commandTypes)
             {
                 var metadata = commandType.GetCustomAttribute<Name>();
-
-                switch (metadata.MatchOption)
+                if (commandType.GetCustomAttribute<Namespace>()?.TypeNamespace == @namespace)
                 {
-                    case MatchOption.PlainText:
-                        if (metadata.CommandName == name)
-                        {
-                            return commandType;
-                        } 
-                        break;
-                    case MatchOption.RegExp:
-                        if (Regex.Match(name, metadata.CommandName).Success && name.Length >= metadata.LengthLeft && name.Length <= metadata.LengthRight)
-                        {
-                            return commandType;
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    switch (metadata.MatchOption)
+                    {
+                        case MatchOption.PlainText:
+                            if (metadata.CommandName == name)
+                            {
+                                return commandType;
+                            } 
+                            break;
+                        case MatchOption.RegExp:
+                            if (Regex.Match(name, metadata.CommandName).Success)
+                            {
+                                return commandType;
+                            }
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
             return null;
         }
-
+         
         public static bool Process(CommandContext context, params object[] handleObjects)
         {
             var index = context.Message.IndexOf(" ", StringComparison.Ordinal);
             var commandName = index == -1 ? context.Message : context.Message.Substring(0, index);
 
-            var type = Get(commandName);
+            var type = Get(commandName, context.Namespace);
 
             if (type != null && IsCallerHasPrivilege(context, type) && typeof(ICommandTransform).IsAssignableFrom(type))
             {
@@ -53,7 +59,7 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
                 if (handlerType != null && handlerType.IsInheritFromGeneric(typeof(ICommandHandler<>), typeof(ICommandTransform)))
                 {
                     var handler = handlerType.GetNonParameterConstructor().Invoke(null);
-                    handler.CallMethod("Handle", context.Message, type.GetNonParameterConstructor().Invoke(null), handleObjects);
+                    handler.CallMethod("Handle", context, type.GetNonParameterConstructor().Invoke(null), handleObjects);
                     return true;
                 }
             }
@@ -67,7 +73,11 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
                 return false;
             }
 
-            return !commandType.HasCustomAttribute<AdminOnly>() || context.From == Configuration.Me || Admin.GetAdministrators().All(admin => admin.Id != context.From);
+            if (commandType.HasCustomAttribute<AdminOnly>())
+            {
+                return context.From == Configuration.Me || Admin.GetAdministrators().Any(admin => admin.Id == context.From);
+            }
+            return true;
         }
 
         private static bool IsExcluded(MemberInfo type, string group)

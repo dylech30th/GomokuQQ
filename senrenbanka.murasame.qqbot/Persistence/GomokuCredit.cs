@@ -65,7 +65,7 @@ namespace senrenbanka.murasame.qqbot.Persistence
         {
             if (File.Exists(Filename))
             {
-                GomokuPlayersCredits = File.ReadAllText(Filename).FromJson<List<PlayerCredit>>();
+                GomokuPlayersCredits = File.ReadAllText(Filename).FromJson<List<PlayerCredit>>() ?? new List<PlayerCredit>();
             }
         }
     }

@@ -12,20 +12,19 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     [HandlerOf(nameof(GomokuPlayerExitCommand))]
     public class GomokuPlayerExitCommandHandler : ICommandHandler<GomokuPlayerExitCommand>
     {
-        public void Handle(string cmdInput, GomokuPlayerExitCommand command, params object[] handleObjects)
+        public void Handle(CommandContext context, GomokuPlayerExitCommand command, params object[] handleObjects)
         {
             var game = (PlayGround) handleObjects[0];
-            var context = (GroupMessageReceivedContext) handleObjects[1];
 
-            if (game != null && game.IsMessageFromPlayer(context.FromQq))
+            if (game != null && game.IsMessageFromPlayer(context.From))
             {
                 var sb = new StringBuilder();
-                sb.Append($"{CqCode.At(context.FromQq)}离开游戏，游戏结束！");
+                sb.Append($"{CqCode.At(context.From)}离开游戏，游戏结束！");
             
                 if (game.GameStarted)
                 {
-                    sb.Append($"\n根据退赛惩罚机制,{CqCode.At(context.FromQq)}将会被扣除20000点Gomoku Credit");
-                    GomokuCredit.SetOrIncreaseCredit(context.FromQq, -30000);
+                    sb.Append($"\n根据退赛惩罚机制,{CqCode.At(context.From)}将会被扣除20000点Gomoku Credit");
+                    GomokuCredit.SetOrIncreaseCredit(context.From, -30000);
                 }
                 CommandFactory.GetMahuaApi().SendGroupMessage(context.FromGroup, sb.ToString());
 

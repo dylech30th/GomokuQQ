@@ -11,14 +11,13 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Handlers
     [HandlerOf(nameof(GomokuPlayerGoCommand))]
     public class GomokuPlayerGoCommandHandler : ICommandHandler<GomokuPlayerGoCommand>
     {
-        public void Handle(string cmdInput, GomokuPlayerGoCommand command, params object[] handleObjects)
+        public void Handle(CommandContext context, GomokuPlayerGoCommand command, params object[] handleObjects)
         {
             var game = (PlayGround) handleObjects[0];
-            var context = (GroupMessageReceivedContext) handleObjects[1];
 
             var mahuaApi = CommandFactory.GetMahuaApi();
 
-            if (game.IsActivatedAndValid(context.FromQq) && game.IsBlackOrWhiteTurn(context.FromQq))
+            if (game.IsActivatedAndValid(context.From) && game.IsBlackOrWhiteTurn(context.From))
             {
                 var dropResult = game.ProcessGoCommand(context.Message);
                 switch (dropResult.GameState)

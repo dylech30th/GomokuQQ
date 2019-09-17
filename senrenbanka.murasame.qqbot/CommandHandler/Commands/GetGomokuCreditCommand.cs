@@ -6,6 +6,7 @@ namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
 {
     [Name("/gcget")]
     [AdminOnly]
+    [Namespace("ns:Query")]
     public class GetGomokuCreditCommand : ICommandTransform
     {
         public IEnumerable<string> Transform(string cmdInput)

@@ -12,7 +12,20 @@ namespace senrenbanka.murasame.qqbot.Persistence
 
     public class Admin
     {
-        private static ISet<Administrator> Administrators = new HashSet<Administrator>
+        private class AdminEqualityComparer : IEqualityComparer<Administrator>
+        {
+            public bool Equals(Administrator x, Administrator y)
+            {
+                return x?.Id == y?.Id;
+            }
+
+            public int GetHashCode(Administrator obj)
+            {
+                return obj.GetHashCode();
+            }
+        }
+
+        private static ISet<Administrator> _administrators = new HashSet<Administrator>(new AdminEqualityComparer())
         {
             new Administrator
             {
@@ -22,13 +35,14 @@ namespace senrenbanka.murasame.qqbot.Persistence
 
         public static void AddAdmin(string id)
         {
-            if (Administrators.All(admin => admin.Id != id))
+            if (_administrators.All(admin => admin.Id != id))
             {
-                Administrators.Add(new Administrator {Id = id});
+                _administrators.Add(new Administrator {Id = id});
+                SaveAdmins();
             }
         }
 
-        public static ISet<Administrator> GetAdministrators() => Administrators;
+        public static ISet<Administrator> GetAdministrators() => _administrators;
 
         private const string Filename = "admins.json";
 
@@ -39,18 +53,18 @@ namespace senrenbanka.murasame.qqbot.Persistence
                 File.Create(Filename);
             }
 
-            File.WriteAllText(Filename, Administrators.ToJson());
+            File.WriteAllText(Filename, _administrators.ToJson());
         }
 
         public static void LoadAdmins()
         {
             if (File.Exists(Filename))
             {
-                Administrators = File.ReadAllText(Filename).FromJson<ISet<Administrator>>() ?? new HashSet<Administrator> {new Administrator {Id = "2653221698"}};
+                _administrators = File.ReadAllText(Filename).FromJson<ISet<Administrator>>() ?? new HashSet<Administrator> {new Administrator {Id = Configuration.Me}};
             }
             else
             {
-                Administrators = new HashSet<Administrator> {new Administrator {Id = "2653221698"}};
+                _administrators = new HashSet<Administrator> {new Administrator {Id = Configuration.Me}};
             }
         }
     }

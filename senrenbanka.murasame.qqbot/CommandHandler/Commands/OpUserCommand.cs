@@ -5,7 +5,8 @@ using senrenbanka.murasame.qqbot.CommandHandler.Attributes;
 namespace senrenbanka.murasame.qqbot.CommandHandler.Commands
 {
     [Name("/op")]
-    [AdminOnly]
+    [OwnerOnly]
+    [Namespace("ns:Query")]
     public class OpUserCommand : ICommandTransform
     {
         public IEnumerable<string> Transform(string cmdInput)

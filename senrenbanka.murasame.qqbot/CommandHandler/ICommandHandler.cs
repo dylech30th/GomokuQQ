@@ -2,6 +2,6 @@
 {
     public interface ICommandHandler<in T> where T : ICommandTransform
     {
-        void Handle(string cmdInput, T command, params object[] handleObjects);
+        void Handle(CommandContext context, T command, params object[] handleObjects);
     }
 }
