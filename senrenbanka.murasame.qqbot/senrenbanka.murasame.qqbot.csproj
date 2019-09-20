@@ -76,6 +76,27 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BotImpl\ChineseChess\Chessboard.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\BlackCannons.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\BlackChariots.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\BlackElephants.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\BlackKing.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\BlackKnights.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\BlackMandarins.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\BlackPawns.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\ChessmanType.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\EmptyChessman.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\IChineseChessman.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\RedCannons.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\RedChariots.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\RedElephants.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\RedKing.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\RedKnights.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\RedMandarins.cs" />
+    <Compile Include="BotImpl\ChineseChess\Chessman\RedPawns.cs" />
+    <Compile Include="BotImpl\ChineseChess\Image\Coordinates.cs" />
+    <Compile Include="BotImpl\ChineseChess\Image\Painter.cs" />
+    <Compile Include="BotImpl\ChineseChess\Rules\IChineseChessRules.cs" />
     <Compile Include="BotImpl\Gomoku\Attribute.cs" />
     <Compile Include="BotImpl\Gomoku\Axis.cs" />
     <Compile Include="BotImpl\Gomoku\Chessman.cs" />
@@ -97,6 +118,7 @@
     <Compile Include="CommandHandler\CommandContext.cs" />
     <Compile Include="CommandHandler\Commands\CommandFactory.cs" />
     <Compile Include="CommandHandler\Commands\ForceEndGomokuCommand.cs" />
+    <Compile Include="CommandHandler\Commands\GetGomokuCreditTrendCommand.cs" />
     <Compile Include="CommandHandler\Commands\GetGomokuCreditCommand.cs" />
     <Compile Include="CommandHandler\Commands\GetOpListCommand.cs" />
     <Compile Include="CommandHandler\Commands\GetOwnerCommand.cs" />
@@ -111,6 +133,7 @@
     <Compile Include="CommandHandler\Attributes\Exclude.cs" />
     <Compile Include="CommandHandler\Handlers\ForceEndGomokuCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GetGomokuCreditCommandHandler.cs" />
+    <Compile Include="CommandHandler\Handlers\GetGomokuCreditTrendCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GetOpListCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GetOwnerCommandHandler.cs" />
     <Compile Include="CommandHandler\Handlers\GomokuPlayerJoinGameCommandHandler.cs" />
@@ -129,6 +152,7 @@
     <Compile Include="MahuaEvents\CommandsGroupMessageReceivedMahuaEvent.cs" />
     <Compile Include="MahuaEvents\AskGomokuCreditsGroupMessageReceivedMahuaEvent.cs" />
     <Compile Include="MahuaEvents\CallHelpGroupMessageReceivedMahuaEvent.cs" />
+    <Compile Include="MahuaEvents\FriendAddingRequestMahuaEvent.cs" />
     <Compile Include="MahuaEvents\GomokuCommandGroupMessageReceivedEvent.cs" />
     <Compile Include="MahuaEvents\GroupJoiningInvitationReceivedMahuaEvent.cs" />
     <Compile Include="MahuaEvents\LoveMurasameInitializationMahuaEvent.cs" />

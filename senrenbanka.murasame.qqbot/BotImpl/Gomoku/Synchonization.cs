@@ -160,7 +160,6 @@ namespace senrenbanka.murasame.qqbot.BotImpl.Gomoku
 
             GomokuCredit.SetOrIncreaseCredit(winner, 10000);
             GomokuCredit.SetOrIncreaseCredit(loser, -10000);
-            GomokuCredit.SaveCreditFile();
 
             var sb = new StringBuilder();
             sb.AppendLine($"{(isBlackWin ? "黑" : "白")}方{CqCode.At(winner)}胜利！游戏结束！");

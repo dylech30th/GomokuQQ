@@ -45,5 +45,18 @@ namespace senrenbanka.murasame.qqbot.Resources.Generic
                 enumerable.Remove(value);
             }
         }
+
+        public static IEnumerable<T> Union<T>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, bool> exceptional)
+        {
+            var final = new List<T>(first);
+            var enumerable = second.ToList();
+
+            foreach (var t in enumerable.Where(t => !(final.Contains(t) || exceptional(t))))
+            {
+                final.Add(t);
+            }
+
+            return final;
+        }
     }
 }

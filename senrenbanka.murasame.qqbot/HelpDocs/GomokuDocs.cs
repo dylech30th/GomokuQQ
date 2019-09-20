@@ -15,7 +15,8 @@ namespace senrenbanka.murasame.qqbot.HelpDocs
             sb.AppendLine("    x坐标y坐标 落子");
             sb.AppendLine("    /gf 投降");
             sb.AppendLine("    /ve 投票结束游戏");
-            sb.AppendLine("    /gc 查看自己的gomoku credit");
+            sb.AppendLine("    /gt 查看Gomoku Credit排行榜");
+            sb.AppendLine("    /gc 查看自己的Gomoku Credit");
             sb.AppendLine("    /gsf <群号> 强制结束该群的游戏 (仅限管理员)");
             sb.AppendLine("    /gcset <qq号> <分数> 设置该玩家的Gomoku Credit (仅限管理员)");
             sb.AppendLine("    /op <qq号> 设置该用户为管理员 (仅限机器人所有者)");

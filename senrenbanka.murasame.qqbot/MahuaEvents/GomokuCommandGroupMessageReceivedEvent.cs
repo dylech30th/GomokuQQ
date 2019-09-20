@@ -77,6 +77,7 @@ namespace senrenbanka.murasame.qqbot.MahuaEvents
             message.AppendLine("   投降: /gf");
             message.AppendLine("   投票结束: /ve");
             message.AppendLine("   查看Gomoku Credit: /gc");
+            message.AppendLine("   查看Gomoku Credit排行榜: /gt");
             message.AppendLine("---------------------------------");
 
             switch (game.Role)
