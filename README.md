@@ -17,6 +17,6 @@
 3. run `senrenbanka.murasame.qqbot/build.bat`, if build successed you will see "BUILD SUCCESSED" displayed on the terminal
 4. cd to `bin/Debug/CQP` folder
 5. move all files under the folder to your CoolQ install path
-6. open CoolQ, click the version number at the lower right for **5 TIMES**, open the developer mode and restart CoolQ
+6. open CoolQ, click the version number at the lower right for **5 TIMES**, turn on developer mode and restart CoolQ
 7. select `lovemurasame` in CoolQ's application management and open it
 8. type `/help` in group, read the commands/rules and start playing!
