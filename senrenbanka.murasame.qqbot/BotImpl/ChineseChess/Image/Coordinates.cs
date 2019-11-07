@@ -13,6 +13,6 @@
         public static int[] HorizontalLine =
         {
 
-        }
+        };
     }
 }

@@ -31,9 +31,8 @@ namespace senrenbanka.murasame.qqbot.MahuaEvents
                 game = GomokuFactory.GetOrCreatePlayGround(context.FromGroup);
                 PlayerJoinGame(game, context);
             }
-            else
+            else if (GomokuFactory.TryGetPlayGround(context.FromGroup, out game))
             {
-                GomokuFactory.TryGetPlayGround(context.FromGroup, out game);
                 CommandFactory.Process(new CommandContext(context.FromQq, context.FromGroup, context.Message, CommandFactory.GomokuCommandsNs), game);
             }
         }
