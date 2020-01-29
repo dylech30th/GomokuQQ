@@ -1,15 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using senrenbanka.murasame.qqbot.BotImpl.ChineseChess.Chessman;
+using senrenbanka.murasame.qqbot.BotImpl.ChineseChess.Pieces;
 
 namespace senrenbanka.murasame.qqbot.BotImpl.ChineseChess
 {
     public class Chessboard
     {
-        private IChineseChessman[,] _chessboard = new IChineseChessman[9,10];
+        private readonly IChinesePiece[,] chessboard;
 
-        private readonly Dictionary<(int x, int y), IChineseChessman> _initChessmanCoordinateDictionary = new Dictionary<(int x, int y), IChineseChessman>
+        public Chessboard()
+        {
+            chessboard = Init();
+        }
+
+        private static readonly Dictionary<(int x, int y), IChinesePiece> InitChessmanCoordinateDictionary = new Dictionary<(int x, int y), IChinesePiece>
         {
             //Black pieces
             [(0, 0)] = new BlackChariots(), 
@@ -47,22 +52,47 @@ namespace senrenbanka.murasame.qqbot.BotImpl.ChineseChess
             [(8, 6)] = new RedPawns()
         };
 
-        private void Init()
+        private static IChinesePiece[,] Init()
+        {
+            var chessboard = new IChinesePiece[9, 10];
+
+            for (var i = 0; i < 9; i++)
+            {
+                for (var j = 0; j < 10; j++)
+                {
+                    if (InitChessmanCoordinateDictionary.Any(pieces => pieces.Key.x == i && pieces.Key.y == j))
+                    {
+                        chessboard[i, j] = InitChessmanCoordinateDictionary[(i, j)];
+                    }
+                    else
+                    {
+                        chessboard[i, j] = new EmptyChessman();
+                    }
+                }
+            }
+
+            return chessboard;
+        }
+
+        public IChinesePiece GetPiece(Point point)
+        {
+            return chessboard[point.X, point.Y];
+        }
+
+        public Point FindPos(IChinesePiece piece)
         {
             for (var i = 0; i < 9; i++)
             {
                 for (var j = 0; j < 10; j++)
                 {
-                    if (_initChessmanCoordinateDictionary.Any(pieces => pieces.Key.x == i && pieces.Key.y == j))
+                    if (chessboard[i, j] == piece)
                     {
-                        _chessboard[i, j] = _initChessmanCoordinateDictionary[(i, j)];
-                    }
-                    else
-                    {
-                        _chessboard[i, j] = new EmptyChessman();
+                        return new Point(i, j);
                     }
                 }
             }
+
+            return Pieces.Pieces.InvalidCoordinate;
         }
     }
 }

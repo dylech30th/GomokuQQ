@@ -1,10 +1,10 @@
 ﻿using System.Drawing;
-using senrenbanka.murasame.qqbot.BotImpl.ChineseChess.Chessman;
+using senrenbanka.murasame.qqbot.BotImpl.ChineseChess.Pieces;
 
 namespace senrenbanka.murasame.qqbot.BotImpl.ChineseChess.Rules
 {
     public interface IChineseChessRules
     {
-        bool MovementRational(IChineseChessman chessman, Point from, Point to, Chessboard chessboard);
+        bool MovementRational(IChinesePiece chessman, Point from, Point to, Chessboard chessboard);
     }
 }
