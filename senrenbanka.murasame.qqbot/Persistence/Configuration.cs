@@ -17,7 +17,7 @@ namespace senrenbanka.murasame.qqbot.Persistence
                         return content;
                     }
                 }
-                return "2653221698";
+                return "";
             }
         }
     }
